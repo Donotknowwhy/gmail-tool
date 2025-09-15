@@ -56,7 +56,14 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Bước 5: Chạy ứng dụng
+### Bước 5: Tạo file credentials.json
+1. Vào https://console.cloud.google.com/
+2. Chọn project → APIs & Services → Credentials
+3. Create Credentials → OAuth client ID → Desktop application
+4. Tải file JSON và đặt tên `credentials.json`
+5. Copy file vào thư mục `C:\gmail-tool`
+
+### Bước 6: Chạy ứng dụng
 
 **Cách 1: Chạy tự động (Khuyến nghị)**
 - **Double-click** vào file `run_gmail_tool.bat`
