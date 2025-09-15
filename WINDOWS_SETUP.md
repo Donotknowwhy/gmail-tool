@@ -1,96 +1,111 @@
 # 🪟 Hướng dẫn cài đặt Gmail Tool trên Windows
 
-## 📋 Yêu cầu
-- Windows 10/11
-- Kết nối Internet
-- Tài khoản Gmail
+## 📥 Tải và cài đặt Python
 
-## 🚀 Cài đặt nhanh (5 phút)
+### Bước 1: Tải Python
+1. Vào trang web: **https://www.python.org/downloads/**
+2. Nhấn nút **"Download Python 3.x.x"** (màu vàng lớn)
+3. Chờ tải xong file `.exe`
 
-### Bước 1: Cài đặt Python
-1. Tải Python từ: https://www.python.org/downloads/
-2. **Quan trọng:** Tick vào "Add Python to PATH" khi cài đặt
-3. Chọn "Install Now"
+### Bước 2: Cài đặt Python
+1. **Mở file vừa tải** (thường ở Downloads)
+2. **Quan trọng:** Tick vào ☑️ **"Add Python to PATH"** 
+3. Nhấn **"Install Now"**
+4. Chờ cài đặt xong → Nhấn **"Close"**
 
-### Bước 2: Tải dự án
-1. Tải ZIP của dự án
-2. Giải nén vào thư mục `C:\tool-gmail`
+### Bước 3: Kiểm tra Python
+1. Nhấn **Windows + R**
+2. Gõ `cmd` → Nhấn Enter
+3. Gõ: `python --version`
+4. Nếu hiện số phiên bản → ✅ Thành công!
 
-### Bước 3: Chạy ứng dụng
-**Cách 1: Sử dụng file batch (Dễ nhất)**
-1. Double-click vào file `run_gmail_tool.bat`
-2. File sẽ tự động cài đặt và chạy ứng dụng
+---
 
-**Cách 2: Sử dụng Command Prompt**
-1. Mở Command Prompt
-2. Gõ các lệnh sau:
+## 📁 Tải và thiết lập Gmail Tool
+
+### Bước 1: Tải dự án
+1. **Tải ZIP** từ GitHub về máy
+2. **Giải nén** vào thư mục `C:\gmail-tool`
+
+### Bước 2: Mở Command Prompt
+1. Nhấn **Windows + R**
+2. Gõ `cmd` → Nhấn Enter
+3. Gõ: `cd C:\gmail-tool`
+
+### Bước 3: Cài đặt thư viện
 ```cmd
-cd C:\tool-gmail
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
+```
+
+---
+
+## 🚀 Chạy ứng dụng
+
+### Lần đầu chạy:
+```cmd
+cd C:\gmail-tool
+venv\Scripts\activate
 python gmail_tool.py
 ```
 
-### Bước 4: Thiết lập Google Cloud
-1. Vào: https://console.cloud.google.com/
-2. Tạo project mới
-3. Bật Gmail API
-4. Tạo OAuth 2.0 credentials (Desktop application)
-5. Tải file JSON và đặt tên là `credentials.json`
-6. Đặt file vào thư mục `C:\tool-gmail`
-
-## 🎯 Sử dụng
-1. Chạy ứng dụng
-2. Lần đầu sẽ mở trình duyệt để đăng nhập Gmail
-3. Cấp quyền cho ứng dụng
-4. Sử dụng menu để phân tích email
-
-## 🐛 Xử lý lỗi
-
-### "python is not recognized"
-- Cài đặt lại Python và tick "Add Python to PATH"
-- Restart Command Prompt
-
-### "credentials.json not found"
-- Kiểm tra file có đúng tên và vị trí không
-- Đảm bảo đã tải từ Google Cloud Console
-
-### "Permission denied"
-- Chạy Command Prompt với quyền Administrator
-- Hoặc chạy file `run_gmail_tool.bat` bằng cách right-click → "Run as administrator"
-
-### Lỗi kết nối
-- Kiểm tra Internet
-- Tắt firewall tạm thời
-- Thử lại sau vài phút
-
-## 📁 Cấu trúc thư mục sau khi cài đặt
-```
-C:\tool-gmail\
-├── gmail_tool.py
-├── credentials.json      ← Bạn tự tạo
-├── run_gmail_tool.bat   ← File chạy nhanh
-├── requirements.txt
-├── venv\                ← Virtual environment
-└── ... (các file khác)
+### Lần sau chạy:
+```cmd
+cd C:\gmail-tool
+venv\Scripts\activate
+python gmail_tool.py
 ```
 
-## ✅ Kiểm tra cài đặt thành công
-Nếu thấy menu như này là thành công:
-```
-🎯 GMAIL TOOL - CHẾ ĐỘ TƯƠNG TÁC
-============================================================
+---
 
-Chọn chức năng:
-1. Phân tích đơn hàng theo khoảng thời gian
-2. Tìm kiếm email theo từ khóa
-3. Xuất kết quả ra file
-0. Thoát
+## ✅ Kiểm tra cài đặt
+
+### Cấu trúc thư mục đúng:
+```
+C:\gmail-tool\
+├── gmail_tool.py          ✅
+├── credentials.json       ✅ (bạn tự tạo)
+├── requirements.txt       ✅
+├── venv\                 ✅ (tự tạo)
+└── token.json            ✅ (tự tạo khi chạy)
 ```
 
-## 📞 Hỗ trợ
-Nếu gặp vấn đề, hãy:
-1. Kiểm tra lại các bước trên
-2. Xem file README.md chi tiết
-3. Liên hệ hỗ trợ
+### Lần đầu chạy thành công:
+1. ✅ Tool mở trình duyệt
+2. ✅ Chọn tài khoản Gmail
+3. ✅ Cấp quyền truy cập
+4. ✅ Hiện menu chính
+
+---
+
+## 🔧 Xử lý lỗi
+
+### ❌ "python is not recognized"
+**Nguyên nhân:** Chưa tick "Add Python to PATH"
+**Giải pháp:** Cài lại Python và tick ☑️ "Add Python to PATH"
+
+### ❌ "credentials.json not found"
+**Nguyên nhân:** Thiếu file credentials
+**Giải pháp:** Tải file JSON từ Google Cloud và đặt tên `credentials.json`
+
+
+### ❌ "Permission denied"
+**Nguyên nhân:** Không đủ quyền
+**Giải pháp:** 
+1. Nhấn **Windows + R**
+2. Gõ `cmd` → Nhấn **Ctrl + Shift + Enter**
+3. Chọn **"Yes"** khi hỏi quyền Administrator
+
+---
+
+## 💡 Mẹo hay
+
+- **Lưu Command Prompt:** Tạo shortcut để mở nhanh
+- **Backup token:** Copy file `token.json` để không cần đăng nhập lại
+- **Đổi tài khoản:** Chọn option 4 trong menu để đổi Gmail
+- **Ngày nhập:** Dùng định dạng DD/MM/YYYY (15/01/2024)
+
+---
+
+**🎉 Chúc bạn cài đặt thành công!**

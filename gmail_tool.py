@@ -35,6 +35,11 @@ class GmailTool:
         """
         print(f"{Fore.CYAN}🚀 Đang khởi tạo Gmail Tool...")
         
+        # Kiểm tra xem có cần đăng nhập lại không
+        token_file = "token.json"
+        if not os.path.exists(token_file):
+            print(f"{Fore.YELLOW}⚠️ Không tìm thấy token. Sẽ yêu cầu đăng nhập lại...")
+        
         # Xác thực với Gmail
         if not self.authenticator.authenticate():
             print(f"{Fore.RED}❌ Không thể xác thực với Gmail API")
@@ -275,9 +280,10 @@ class GmailTool:
             print(f"{Fore.GREEN}1. Phân tích đơn hàng theo khoảng thời gian")
             print(f"{Fore.GREEN}2. Tìm kiếm email theo từ khóa")
             print(f"{Fore.GREEN}3. Xuất kết quả ra file")
+            print(f"{Fore.YELLOW}4. Đổi tài khoản Google (xóa token)")
             print(f"{Fore.RED}0. Thoát")
             
-            choice = input(f"\n{Fore.YELLOW}Nhập lựa chọn (0-3): ").strip()
+            choice = input(f"\n{Fore.YELLOW}Nhập lựa chọn (0-4): ").strip()
             
             if choice == '0':
                 print(f"{Fore.CYAN}👋 Tạm biệt!")
@@ -288,11 +294,18 @@ class GmailTool:
                 self._handle_search()
             elif choice == '3':
                 self._handle_export()
+            elif choice == '4':
+                self._handle_change_account()
             else:
                 print(f"{Fore.RED}❌ Lựa chọn không hợp lệ")
     
     def _handle_analyze_orders_by_date(self):
         """Xử lý phân tích đơn hàng theo khoảng thời gian"""
+        # Kiểm tra và khởi tạo lại nếu cần
+        if not self.service or not self.fetcher:
+            if not self.initialize():
+                return
+        
         try:
             print(f"\n{Fore.CYAN}📅 PHÂN TÍCH ĐƠN HÀNG THEO KHOẢNG THỜI GIAN")
             print(f"{Fore.CYAN}{'='*50}")
@@ -370,6 +383,11 @@ class GmailTool:
     
     def _handle_search(self):
         """Xử lý tìm kiếm email"""
+        # Kiểm tra và khởi tạo lại nếu cần
+        if not self.service or not self.fetcher:
+            if not self.initialize():
+                return
+        
         query = input(f"{Fore.YELLOW}Nhập từ khóa tìm kiếm: ").strip()
         if query:
             emails = self.fetch_emails(query=query)
@@ -380,6 +398,11 @@ class GmailTool:
     
     def _handle_export(self):
         """Xử lý xuất kết quả"""
+        # Kiểm tra và khởi tạo lại nếu cần
+        if not self.service or not self.fetcher:
+            if not self.initialize():
+                return
+        
         try:
             print(f"\n{Fore.CYAN}📤 XUẤT KẾT QUẢ RA FILE")
             print(f"{Fore.CYAN}{'='*30}")
@@ -458,6 +481,48 @@ class GmailTool:
             print(f"{Fore.RED}❌ Định dạng ngày không hợp lệ")
         except Exception as e:
             print(f"{Fore.RED}❌ Lỗi: {str(e)}")
+    
+    def _handle_change_account(self):
+        """Xử lý đổi tài khoản Google bằng cách xóa token"""
+        print(f"\n{Fore.CYAN}🔄 ĐỔI TÀI KHOẢN GOOGLE")
+        print(f"{Fore.CYAN}{'='*40}")
+        
+        # Kiểm tra xem có file token.json không
+        token_file = "token.json"
+        if os.path.exists(token_file):
+            print(f"{Fore.YELLOW}📁 Tìm thấy file token hiện tại: {token_file}")
+            
+            # Xác nhận từ người dùng
+            confirm = input(f"{Fore.YELLOW}Bạn có chắc chắn muốn xóa token và đăng nhập lại? (y/n): ").strip().lower()
+            
+            if confirm in ['y', 'yes', 'có']:
+                try:
+                    # Xóa file token
+                    os.remove(token_file)
+                    print(f"{Fore.GREEN}✅ Đã xóa file token thành công!")
+                    
+                    # Thông báo hướng dẫn
+                    print(f"\n{Fore.CYAN}📋 HƯỚNG DẪN:")
+                    print(f"{Fore.WHITE}1. Tool sẽ tự động khởi tạo lại khi bạn chọn chức năng khác")
+                    print(f"{Fore.WHITE}2. Trình duyệt sẽ mở để bạn chọn Google account mới")
+                    print(f"{Fore.WHITE}3. Cấp quyền truy cập email cho tool")
+                    print(f"{Fore.WHITE}4. Token mới sẽ được lưu tự động")
+                    
+                    # Reset authenticator để chuẩn bị cho lần đăng nhập mới
+                    self.authenticator = GmailAuthenticator()
+                    self.service = None
+                    self.fetcher = None
+                    
+                    print(f"\n{Fore.GREEN}🎉 Hoàn tất! Token đã được xóa.")
+                    print(f"{Fore.YELLOW}💡 Lần tiếp theo bạn sử dụng tool, sẽ được yêu cầu đăng nhập lại.")
+                    
+                except Exception as e:
+                    print(f"{Fore.RED}❌ Lỗi khi xóa token: {str(e)}")
+            else:
+                print(f"{Fore.YELLOW}⚠️ Hủy bỏ thao tác")
+        else:
+            print(f"{Fore.YELLOW}⚠️ Không tìm thấy file token.json")
+            print(f"{Fore.WHITE}Tool sẽ tự động yêu cầu đăng nhập khi cần thiết.")
 
 
 def main():
