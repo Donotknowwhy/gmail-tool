@@ -38,9 +38,21 @@ class GmailAuthenticator:
                     print("\n💡 Lưu ý: File phải có tên chính xác 'credentials.json'")
                     return False
                 
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    CREDENTIALS_FILE, SCOPES)
-                self.creds = flow.run_local_server(port=0)
+                try:
+                    flow = InstalledAppFlow.from_client_secrets_file(
+                        CREDENTIALS_FILE, SCOPES)
+                    self.creds = flow.run_local_server(port=0)
+                except Exception as e:
+                    print(f"❌ Lỗi xác thực: {str(e)}")
+                    print("\n🔧 KHẮC PHỤC LỖI 400:")
+                    print("1. Kiểm tra OAuth consent screen:")
+                    print("   - Vào https://console.cloud.google.com/")
+                    print("   - APIs & Services → OAuth consent screen")
+                    print("   - Đảm bảo app status là 'In production' hoặc 'Testing'")
+                    print("   - Nếu 'Testing': Thêm email vào 'Test users'")
+                    print("2. Kiểm tra Gmail API đã được bật")
+                    print("3. Tạo lại OAuth credentials nếu cần")
+                    return False
             
             # Lưu credentials cho lần sau
             with open(TOKEN_FILE, 'wb') as token:

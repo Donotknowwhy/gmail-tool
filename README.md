@@ -138,6 +138,8 @@ Nếu gặp vấn đề, hãy kiểm tra:
 4. ✅ Kết nối Internet ổn định
 5. ✅ Gmail API đã được bật
 
+**📖 Hướng dẫn khắc phục chi tiết:** Xem file `TROUBLESHOOTING.md`
+
 ---
 
 **🎉 Chúc bạn sử dụng tool thành công!**
