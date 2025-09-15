@@ -21,18 +21,38 @@
 
 ---
 
-## 📁 Tải và thiết lập Gmail Tool
+## 📥 Cài đặt Git
 
-### Bước 1: Tải dự án
-1. **Tải ZIP** từ GitHub về máy
-2. **Giải nén** vào thư mục `C:\gmail-tool`
+### Bước 1: Tải Git
+1. Vào: **https://git-scm.com/download/win**
+2. Nhấn **"Download for Windows"** (màu xanh lớn)
+3. Chờ tải xong file `.exe`
 
-### Bước 2: Mở Command Prompt
+### Bước 2: Cài đặt Git
+1. **Mở file vừa tải** (thường ở Downloads)
+2. Nhấn **"Next"** → **"Next"** → **"Next"** → **"Install"**
+3. Chờ cài đặt xong → Nhấn **"Finish"**
+
+### Bước 3: Kiểm tra Git
 1. Nhấn **Windows + R**
 2. Gõ `cmd` → Nhấn Enter
-3. Gõ: `cd C:\gmail-tool`
+3. Gõ: `git --version`
+4. Nếu hiện số phiên bản → ✅ Thành công!
 
-### Bước 3: Cài đặt thư viện
+---
+
+## 📁 Clone và thiết lập Gmail Tool
+
+### Bước 1: Clone dự án
+1. **Mở Command Prompt**
+2. **Clone dự án:**
+   ```cmd
+   cd C:\
+   git clone https://github.com/Donotknowwhy/gmail-tool.git
+   cd gmail-tool
+   ```
+
+### Bước 2: Cài đặt thư viện
 ```cmd
 python -m venv venv
 venv\Scripts\activate
@@ -67,6 +87,8 @@ C:\gmail-tool\
 ├── gmail_tool.py          ✅
 ├── credentials.json       ✅ (bạn tự tạo)
 ├── requirements.txt       ✅
+├── run_gmail_tool.bat     ✅
+├── WINDOWS_SETUP.md       ✅
 ├── venv\                 ✅ (tự tạo)
 └── token.json            ✅ (tự tạo khi chạy)
 ```
@@ -84,6 +106,10 @@ C:\gmail-tool\
 ### ❌ "python is not recognized"
 **Nguyên nhân:** Chưa tick "Add Python to PATH"
 **Giải pháp:** Cài lại Python và tick ☑️ "Add Python to PATH"
+
+### ❌ "git is not recognized"
+**Nguyên nhân:** Git chưa được cài đặt
+**Giải pháp:** Cài Git từ https://git-scm.com/download/win
 
 ### ❌ "credentials.json not found"
 **Nguyên nhân:** Thiếu file credentials

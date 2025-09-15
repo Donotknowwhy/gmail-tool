@@ -5,8 +5,9 @@ Tool đơn giản để phân tích email Gmail, tự động phân loại email
 ## ⚡ Cài đặt nhanh (Windows)
 
 1. **Cài Python:** https://www.python.org/downloads/ → Tick "Add Python to PATH"
-2. **Tải dự án:** Giải nén vào `C:\gmail-tool`
-3. **Chạy:** Double-click `run_gmail_tool.bat`
+2. **Cài Git:** https://git-scm.com/download/win → Next → Next → Install
+3. **Clone dự án:** Mở Command Prompt → `git clone https://github.com/Donotknowwhy/gmail-tool.git`
+4. **Chạy:** Double-click `run_gmail_tool.bat`
 
 **📖 Hướng dẫn chi tiết:** Xem file `WINDOWS_SETUP.md`
 
@@ -31,20 +32,31 @@ Tool đơn giản để phân tích email Gmail, tự động phân loại email
 3. **Quan trọng:** Tick vào ☑️ **"Add Python to PATH"**
 4. Nhấn **Install Now**
 
-### Bước 2: Tải và chạy tool
-1. **Tải dự án:** Giải nén ZIP vào thư mục `C:\gmail-tool`
-2. **Mở Command Prompt:**
+### Bước 2: Cài Git
+1. Vào https://git-scm.com/download/win
+2. Tải **Git for Windows** (file .exe)
+3. **Cài đặt:** Next → Next → Next → Install
+4. **Kiểm tra:** Mở Command Prompt → `git --version`
+
+### Bước 3: Clone dự án
+1. **Mở Command Prompt:**
    - Nhấn `Windows + R`
    - Gõ `cmd` và nhấn Enter
-3. **Chạy các lệnh:**
+2. **Clone dự án:**
    ```cmd
-   cd C:\gmail-tool
-   python -m venv venv
-   venv\Scripts\activate
-   pip install -r requirements.txt
+   cd C:\
+   git clone https://github.com/Donotknowwhy/gmail-tool.git
+   cd gmail-tool
    ```
 
-### Bước 3: Chạy ứng dụng
+### Bước 4: Cài đặt thư viện
+```cmd
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### Bước 5: Chạy ứng dụng
 
 **Cách 1: Chạy tự động (Khuyến nghị)**
 - **Double-click** vào file `run_gmail_tool.bat`
@@ -83,6 +95,8 @@ C:\gmail-tool\
 ├── gmail_tool.py          ← File chính
 ├── credentials.json       ← File bạn tự tạo
 ├── requirements.txt       ← Danh sách thư viện
+├── run_gmail_tool.bat     ← Script chạy tự động
+├── WINDOWS_SETUP.md       ← Hướng dẫn chi tiết
 ├── venv\                 ← Môi trường Python
 └── token.json            ← Tự động tạo (có thể xóa)
 ```
@@ -92,7 +106,10 @@ C:\gmail-tool\
 ### ❌ "python is not recognized"
 **Giải pháp:** Cài lại Python và tick ☑️ "Add Python to PATH"
 
-### ❌ "credentials.json not found"  
+### ❌ "git is not recognized"
+**Giải pháp:** Cài Git từ https://git-scm.com/download/win
+
+### ❌ "credentials.json not found"
 **Giải pháp:** Đảm bảo file `credentials.json` có trong thư mục `C:\gmail-tool`
 
 ### ❌ "Permission denied"
@@ -109,9 +126,10 @@ C:\gmail-tool\
 
 Nếu gặp vấn đề, hãy kiểm tra:
 1. ✅ Python đã cài đúng
-2. ✅ File `credentials.json` có trong thư mục
-3. ✅ Kết nối Internet ổn định
-4. ✅ Gmail API đã được bật
+2. ✅ Git đã cài đúng
+3. ✅ File `credentials.json` có trong thư mục
+4. ✅ Kết nối Internet ổn định
+5. ✅ Gmail API đã được bật
 
 ---
 
