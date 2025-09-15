@@ -89,9 +89,15 @@ REM Kiểm tra file credentials
 if not exist "credentials.json" (
     echo ⚠️  CẢNH BÁO: Không tìm thấy file credentials.json
     echo.
-    echo 📋 HƯỚNG DẪN:
-    echo 1. Đảm bảo bạn đã có file credentials.json từ Google Cloud Console
-    echo 2. Đặt file vào thư mục này
+    echo 📋 HƯỚNG DẪN TẠO FILE CREDENTIALS:
+    echo 1. Vào https://console.cloud.google.com/
+    echo 2. Chọn project → APIs ^& Services → Credentials
+    echo 3. Create Credentials → OAuth client ID
+    echo 4. Chọn "Desktop application"
+    echo 5. Tải file JSON và đặt tên "credentials.json"
+    echo 6. Copy file vào thư mục này: %CD%
+    echo.
+    echo 💡 Lưu ý: File phải có tên chính xác "credentials.json"
     echo.
     echo Bạn có muốn tiếp tục không? (y/n)
     set /p choice=

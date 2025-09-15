@@ -28,12 +28,14 @@ class GmailAuthenticator:
             else:
                 if not os.path.exists(CREDENTIALS_FILE):
                     print(f"❌ Không tìm thấy file {CREDENTIALS_FILE}")
-                    print("Vui lòng tải file credentials từ Google Cloud Console:")
-                    print("1. Truy cập https://console.cloud.google.com/")
-                    print("2. Tạo project mới hoặc chọn project hiện có")
-                    print("3. Bật Gmail API")
-                    print("4. Tạo OAuth 2.0 credentials")
-                    print("5. Tải file JSON và đặt tên là 'credentials.json'")
+                    print("\n📋 HƯỚNG DẪN TẠO FILE CREDENTIALS:")
+                    print("1. Vào https://console.cloud.google.com/")
+                    print("2. Chọn project → APIs & Services → Credentials")
+                    print("3. Create Credentials → OAuth client ID")
+                    print("4. Chọn 'Desktop application'")
+                    print("5. Tải file JSON và đặt tên 'credentials.json'")
+                    print("6. Copy file vào thư mục:", os.getcwd())
+                    print("\n💡 Lưu ý: File phải có tên chính xác 'credentials.json'")
                     return False
                 
                 flow = InstalledAppFlow.from_client_secrets_file(
