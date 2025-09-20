@@ -3,7 +3,7 @@ Module phân tích nội dung email và đánh dấu trạng thái
 """
 import re
 from typing import List, Dict, Tuple
-from config import COMPLETE_KEYWORDS, ERROR_KEYWORDS, PACKAGE_SUCCESS_KEYWORDS, PACKAGE_FAILED_KEYWORDS
+from config import COMPLETE_KEYWORDS, ERROR_KEYWORDS, PACKAGE_SUCCESS_KEYWORDS, PACKAGE_FAILED_KEYWORDS, PACKAGE_SUCCESS_SENDER
 
 
 class ContentAnalyzer:
@@ -57,24 +57,34 @@ class ContentAnalyzer:
         content = self._get_analyze_content(email)
         content_lower = content.lower()
         
-        # Kiểm tra tiêu đề thư trước
+        # Kiểm tra tiêu đề thư và sender
         subject = email.get('subject', '').lower()
+        sender = email.get('sender', '').lower()
+        content = self._get_analyze_content(email).lower()
         
-        # Debug: In ra tiêu đề để kiểm tra
+        # Debug: In ra tiêu đề và sender để kiểm tra
         print(f"   Debug - Subject: {subject}")
+        print(f"   Debug - Sender: {sender}")
         
-        # Kiểm tra từ khóa package delivery (kiểm tra linh hoạt)
-        for keyword in PACKAGE_SUCCESS_KEYWORDS:
-            keyword_lower = keyword.lower()
-            if keyword_lower in subject:
-                print(f"   Debug - Matched SUCCESS keyword: '{keyword}' in '{subject}'")
-                return "PACKAGE_SUCCESS", 1.0
-        
+        # Kiểm tra PACKAGE_FAILED - chỉ cần subject chứa từ khóa
         for keyword in PACKAGE_FAILED_KEYWORDS:
             keyword_lower = keyword.lower()
             if keyword_lower in subject:
                 print(f"   Debug - Matched FAILED keyword: '{keyword}' in '{subject}'")
                 return "PACKAGE_FAILED", 1.0
+        
+        # Kiểm tra PACKAGE_SUCCESS - ưu tiên subject, nếu không có sender thì kiểm tra content
+        for keyword in PACKAGE_SUCCESS_KEYWORDS:
+            keyword_lower = keyword.lower()
+            if keyword_lower in subject:
+                # Nếu có sender đúng
+                if PACKAGE_SUCCESS_SENDER.lower() in sender:
+                    print(f"   Debug - Matched SUCCESS keyword: '{keyword}' in '{subject}' from '{sender}'")
+                    return "PACKAGE_SUCCESS", 1.0
+                # Nếu không có sender nhưng có trong content (email forwarded)
+                elif PACKAGE_SUCCESS_SENDER.lower() in content:
+                    print(f"   Debug - Matched SUCCESS keyword: '{keyword}' in '{subject}' (forwarded from '{PACKAGE_SUCCESS_SENDER}')")
+                    return "PACKAGE_SUCCESS", 1.0
         
         # Đếm số từ khóa COMPLETE và ERROR
         complete_count = self._count_keywords(content_lower, self.complete_keywords)

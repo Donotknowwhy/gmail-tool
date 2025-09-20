@@ -18,7 +18,8 @@ ERROR_KEYWORDS = ['xyz']
 
 # Package delivery status keywords based on subject lines
 PACKAGE_SUCCESS_KEYWORDS = ['your package has arrived']
-PACKAGE_FAILED_KEYWORDS = ['could not be delivered']
+PACKAGE_FAILED_KEYWORDS = ['your Bath &amp; Body Works could not be delivered']
+PACKAGE_SUCCESS_SENDER = 'bathandbodyworks@bathandbodyworks.narvar.com'
 
 # Output settings
 OUTPUT_FORMAT = 'table'  # 'table', 'json', 'csv'

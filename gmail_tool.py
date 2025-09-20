@@ -269,6 +269,57 @@ class GmailTool:
         except Exception as e:
             print(f"{Fore.RED}❌ Lỗi khi xuất file: {str(e)}")
     
+    def _export_order_search_results(self):
+        """Xuất kết quả tìm kiếm order number ra file"""
+        try:
+            from datetime import datetime
+            
+            # Tạo tên file với timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"order_search_results_{timestamp}.txt"
+            
+            results = self.last_search_results
+            
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write("KẾT QUẢ TÌM KIẾM ORDER NUMBERS\n")
+                f.write("="*50 + "\n\n")
+                f.write(f"Khoảng thời gian: {results['date_from']} đến {results['date_to']}\n")
+                f.write(f"Tổng số order tìm kiếm: {len(results['success_orders']) + len(results['failed_orders'])}\n\n")
+                
+                f.write("ORDER SUCCESS:\n")
+                f.write("-" * 20 + "\n")
+                if results['success_orders']:
+                    for order in results['success_orders']:
+                        f.write(f"✅ {order}\n")
+                else:
+                    f.write("Không có order nào thành công\n")
+                
+                f.write("\nORDER FAILED:\n")
+                f.write("-" * 20 + "\n")
+                if results['failed_orders']:
+                    for order in results['failed_orders']:
+                        f.write(f"❌ {order}\n")
+                else:
+                    f.write("Không có order nào thất bại\n")
+                
+                f.write("\nORDER NOT FOUND:\n")
+                f.write("-" * 20 + "\n")
+                if results.get('not_found_orders'):
+                    for order in results['not_found_orders']:
+                        f.write(f"🔍 {order}\n")
+                else:
+                    f.write("Không có order nào không tìm thấy\n")
+                
+                f.write(f"\nTổng kết:\n")
+                f.write(f"- Thành công: {len(results['success_orders'])} orders\n")
+                f.write(f"- Thất bại: {len(results['failed_orders'])} orders\n")
+                f.write(f"- Không tìm thấy: {len(results.get('not_found_orders', []))} orders\n")
+            
+            print(f"{Fore.GREEN}✅ Đã xuất kết quả tìm kiếm order ra file: {filename}")
+            
+        except Exception as e:
+            print(f"{Fore.RED}❌ Lỗi khi xuất file: {str(e)}")
+    
     def run_interactive_mode(self):
         """Chạy chế độ tương tác"""
         print(f"{Fore.CYAN}{'='*60}")
@@ -277,28 +328,168 @@ class GmailTool:
         
         while True:
             print(f"\n{Fore.WHITE}Chọn chức năng:")
-            print(f"{Fore.GREEN}1. Phân tích đơn hàng theo khoảng thời gian")
-            print(f"{Fore.GREEN}2. Tìm kiếm email theo từ khóa")
-            print(f"{Fore.GREEN}3. Xuất kết quả ra file")
-            print(f"{Fore.YELLOW}4. Đổi tài khoản Google (xóa token)")
+            print(f"{Fore.GREEN}1. Tìm kiếm đơn hàng theo order number")
+            print(f"{Fore.GREEN}2. Xuất kết quả ra file")
+            print(f"{Fore.YELLOW}3. Đổi tài khoản Google (xóa token)")
             print(f"{Fore.RED}0. Thoát")
             
-            choice = input(f"\n{Fore.YELLOW}Nhập lựa chọn (0-4): ").strip()
+            choice = input(f"\n{Fore.YELLOW}Nhập lựa chọn (0-3): ").strip()
             
             if choice == '0':
                 print(f"{Fore.CYAN}👋 Tạm biệt!")
                 break
             elif choice == '1':
-                self._handle_analyze_orders_by_date()
+                self._handle_search_orders_by_number()
             elif choice == '2':
-                self._handle_search()
-            elif choice == '3':
                 self._handle_export()
-            elif choice == '4':
+            elif choice == '3':
                 self._handle_change_account()
             else:
                 print(f"{Fore.RED}❌ Lựa chọn không hợp lệ")
     
+    def _handle_search_orders_by_number(self):
+        """Xử lý tìm kiếm đơn hàng theo order number từ file"""
+        # Kiểm tra và khởi tạo lại nếu cần
+        if not self.service or not self.fetcher:
+            if not self.initialize():
+                return
+        
+        # Chọn kiểu lọc
+        print(f"\n{Fore.CYAN}📅 CHỌN KIỂU LỌC EMAIL:")
+        print(f"{Fore.GREEN}1. Lọc theo khoảng thời gian (nhập ngày bắt đầu và kết thúc)")
+        print(f"{Fore.GREEN}2. Lọc tất cả email (mọi lúc)")
+        
+        filter_choice = input(f"\n{Fore.YELLOW}Nhập lựa chọn (1-2): ").strip()
+        
+        if filter_choice == '1':
+            # Nhập ngày bắt đầu và kết thúc
+            from datetime import datetime, timedelta
+            default_date_from = (datetime.now() - timedelta(days=30)).strftime('%d/%m/%Y')
+            date_from_input = input(f"{Fore.YELLOW}Nhập ngày bắt đầu (DD/MM/YYYY) [mặc định: {default_date_from}]: ").strip()
+            if not date_from_input:
+                date_from_input = default_date_from
+            
+            try:
+                date_from = datetime.strptime(date_from_input, '%d/%m/%Y').strftime('%Y-%m-%d')
+            except ValueError:
+                print(f"{Fore.RED}❌ Định dạng ngày không hợp lệ. Vui lòng nhập theo định dạng DD/MM/YYYY")
+                return
+            
+            default_date_to = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
+            date_to_input = input(f"{Fore.YELLOW}Nhập ngày kết thúc (DD/MM/YYYY) [mặc định: {default_date_to}]: ").strip()
+            if not date_to_input:
+                date_to_input = default_date_to
+            
+            try:
+                date_to = datetime.strptime(date_to_input, '%d/%m/%Y').strftime('%Y-%m-%d')
+            except ValueError:
+                print(f"{Fore.RED}❌ Định dạng ngày không hợp lệ. Vui lòng nhập theo định dạng DD/MM/YYYY")
+                return
+            
+            date_range_text = f"khoảng thời gian {date_from} đến {date_to}"
+            query_template = f"after:{date_from} before:{date_to} {{order_number}}"
+            
+        elif filter_choice == '2':
+            date_from = "mọi lúc"
+            date_to = "mọi lúc"
+            date_range_text = "tất cả email (mọi lúc)"
+            query_template = "{order_number}"
+            
+        else:
+            print(f"{Fore.RED}❌ Lựa chọn không hợp lệ!")
+            return
+        
+        # Đọc order numbers từ file
+        try:
+            with open('order_numbers.txt', 'r', encoding='utf-8') as f:
+                order_numbers = [line.strip() for line in f.readlines() if line.strip()]
+        except FileNotFoundError:
+            print(f"{Fore.RED}❌ Không tìm thấy file order_numbers.txt")
+            return
+        
+        print(f"\n{Fore.CYAN}🔍 Đang tìm kiếm {len(order_numbers)} order numbers trong {date_range_text}...")
+        
+        # Tìm kiếm và phân tích từng order number
+        success_orders = []
+        failed_orders = []
+        not_found_orders = []
+        
+        for i, order_number in enumerate(order_numbers, 1):
+            print(f"\n{Fore.YELLOW}[{i}/{len(order_numbers)}] Đang tìm kiếm order: {order_number}")
+            
+            # Tìm kiếm email chứa order number
+            query = query_template.format(order_number=order_number)
+            emails = self.fetcher.get_emails(query=query, max_results=10)
+            
+            if not emails:
+                print(f"   {Fore.RED}❌ Không tìm thấy email cho order {order_number}")
+                not_found_orders.append(order_number)
+                continue
+            
+            # Phân tích email
+            analyzer = ContentAnalyzer()
+            analyzed_emails = analyzer.analyze_emails(emails)
+            
+            # Kiểm tra kết quả phân tích
+            found_success = False
+            found_failed = False
+            
+            for email in analyzed_emails:
+                status = email.get('status', '')
+                if status == 'PACKAGE_SUCCESS':
+                    found_success = True
+                    print(f"   {Fore.GREEN}✅ Tìm thấy SUCCESS cho order {order_number}")
+                    break
+                elif status == 'PACKAGE_FAILED':
+                    found_failed = True
+                    print(f"   {Fore.RED}❌ Tìm thấy FAILED cho order {order_number}")
+                    break
+            
+            if found_success:
+                success_orders.append(order_number)
+            elif found_failed:
+                failed_orders.append(order_number)
+            else:
+                print(f"   {Fore.YELLOW}⚠️ Không xác định được trạng thái cho order {order_number}")
+                not_found_orders.append(order_number)
+        
+        # Hiển thị kết quả tổng hợp
+        print(f"\n{Fore.CYAN}{'='*60}")
+        print(f"{Fore.CYAN}📊 KẾT QUẢ TÌM KIẾM ORDER NUMBERS")
+        print(f"{Fore.CYAN}{'='*60}")
+        
+        print(f"\n{Fore.GREEN}✅ ORDER SUCCESS ({len(success_orders)}):")
+        if success_orders:
+            for order in success_orders:
+                print(f"   {Fore.GREEN}• {order}")
+        else:
+            print(f"   {Fore.YELLOW}Không có order nào thành công")
+        
+        print(f"\n{Fore.RED}❌ ORDER FAILED ({len(failed_orders)}):")
+        if failed_orders:
+            for order in failed_orders:
+                print(f"   {Fore.RED}• {order}")
+        else:
+            print(f"   {Fore.YELLOW}Không có order nào thất bại")
+        
+        print(f"\n{Fore.YELLOW}🔍 ORDER NOT FOUND ({len(not_found_orders)}):")
+        if not_found_orders:
+            for order in not_found_orders:
+                print(f"   {Fore.YELLOW}• {order}")
+        else:
+            print(f"   {Fore.YELLOW}Không có order nào không tìm thấy")
+        
+        print(f"\n{Fore.CYAN}📈 Tổng cộng: {len(success_orders)} thành công, {len(failed_orders)} thất bại, {len(not_found_orders)} không tìm thấy")
+        
+        # Lưu kết quả vào instance để có thể export
+        self.last_search_results = {
+            'success_orders': success_orders,
+            'failed_orders': failed_orders,
+            'not_found_orders': not_found_orders,
+            'date_from': date_from,
+            'date_to': date_to
+        }
+
     def _handle_analyze_orders_by_date(self):
         """Xử lý phân tích đơn hàng theo khoảng thời gian"""
         # Kiểm tra và khởi tạo lại nếu cần
@@ -398,6 +589,11 @@ class GmailTool:
     
     def _handle_export(self):
         """Xử lý xuất kết quả"""
+        # Kiểm tra xem có kết quả từ tìm kiếm order number không
+        if hasattr(self, 'last_search_results') and self.last_search_results:
+            self._export_order_search_results()
+            return
+        
         # Kiểm tra và khởi tạo lại nếu cần
         if not self.service or not self.fetcher:
             if not self.initialize():
