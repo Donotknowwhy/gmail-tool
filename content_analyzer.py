@@ -59,7 +59,7 @@ class ContentAnalyzer:
         
         # Kiểm tra tiêu đề thư và sender
         subject = email.get('subject', '').lower()
-        sender = email.get('sender', '').lower()
+        sender = email.get('from', '').lower()
         content = self._get_analyze_content(email).lower()
         
         # Debug: In ra tiêu đề và sender để kiểm tra
@@ -73,11 +73,11 @@ class ContentAnalyzer:
                 print(f"   Debug - Matched FAILED keyword: '{keyword}' in '{subject}'")
                 return "PACKAGE_FAILED", 1.0
         
-        # Kiểm tra PACKAGE_SUCCESS - ưu tiên subject, nếu không có sender thì kiểm tra content
+        # Kiểm tra PACKAGE_SUCCESS - cần subject chứa từ khóa VÀ sender đúng
         for keyword in PACKAGE_SUCCESS_KEYWORDS:
             keyword_lower = keyword.lower()
             if keyword_lower in subject:
-                # Nếu có sender đúng
+                # Kiểm tra sender đúng
                 if PACKAGE_SUCCESS_SENDER.lower() in sender:
                     print(f"   Debug - Matched SUCCESS keyword: '{keyword}' in '{subject}' from '{sender}'")
                     return "PACKAGE_SUCCESS", 1.0
