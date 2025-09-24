@@ -49,3 +49,8 @@ Thumbs.db
 # Output files
 gmail_results_*.txt
 example_results.txt
+order_search_results_*.txt
+package_orders_*.txt
+
+# Order numbers file (contains sensitive data)
+order_numbers.txt
