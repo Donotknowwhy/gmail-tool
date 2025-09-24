@@ -289,16 +289,40 @@ class GmailTool:
                 f.write("ORDER SUCCESS:\n")
                 f.write("-" * 20 + "\n")
                 if results['success_orders']:
-                    for order in results['success_orders']:
-                        f.write(f"✅ {order}\n")
+                    total_success_qty = 0
+                    for order_data in results['success_orders']:
+                        order = order_data['order']
+                        quantity = order_data['quantity']
+                        if quantity:
+                            f.write(f"✅ {order} - qty: {quantity}\n")
+                            try:
+                                total_success_qty += int(quantity)
+                            except ValueError:
+                                pass
+                        else:
+                            f.write(f"✅ {order}\n")
+                    if total_success_qty > 0:
+                        f.write(f"\n📊 Tổng quantity SUCCESS: {total_success_qty}\n")
                 else:
                     f.write("Không có order nào thành công\n")
                 
                 f.write("\nORDER FAILED:\n")
                 f.write("-" * 20 + "\n")
                 if results['failed_orders']:
-                    for order in results['failed_orders']:
-                        f.write(f"❌ {order}\n")
+                    total_failed_qty = 0
+                    for order_data in results['failed_orders']:
+                        order = order_data['order']
+                        quantity = order_data['quantity']
+                        if quantity:
+                            f.write(f"❌ {order} - quantity: {quantity}\n")
+                            try:
+                                total_failed_qty += int(quantity)
+                            except ValueError:
+                                pass
+                        else:
+                            f.write(f"❌ {order}\n")
+                    if total_failed_qty > 0:
+                        f.write(f"\n📊 Tổng quantity FAILED: {total_failed_qty}\n")
                 else:
                     f.write("Không có order nào thất bại\n")
                 
@@ -374,8 +398,8 @@ class GmailTool:
         print(f"\n{Fore.CYAN}🔍 Đang tìm kiếm {len(order_numbers)} order numbers trong tất cả email...")
         
         # Tìm kiếm và phân tích từng order number
-        success_orders = []
-        failed_orders = []
+        success_orders = []  # List of dicts: {'order': 'xxx', 'quantity': 'yy'}
+        failed_orders = []   # List of dicts: {'order': 'xxx', 'quantity': 'yy'}
         not_found_orders = []
         
         for i, order_number in enumerate(order_numbers, 1):
@@ -397,22 +421,31 @@ class GmailTool:
             # Kiểm tra kết quả phân tích
             found_success = False
             found_failed = False
+            order_quantity = ""
             
             for email in analyzed_emails:
                 status = email.get('status', '')
+                quantity = email.get('quantity', '')
+                
                 if status == 'PACKAGE_SUCCESS':
                     found_success = True
+                    order_quantity = quantity
                     print(f"   {Fore.GREEN}✅ Tìm thấy SUCCESS cho order {order_number}")
+                    if quantity:
+                        print(f"   {Fore.CYAN}📦 Quantity: {quantity}")
                     break
                 elif status == 'PACKAGE_FAILED':
                     found_failed = True
+                    order_quantity = quantity
                     print(f"   {Fore.RED}❌ Tìm thấy FAILED cho order {order_number}")
+                    if quantity:
+                        print(f"   {Fore.CYAN}📦 Quantity: {quantity}")
                     break
             
             if found_success:
-                success_orders.append(order_number)
+                success_orders.append({'order': order_number, 'quantity': order_quantity})
             elif found_failed:
-                failed_orders.append(order_number)
+                failed_orders.append({'order': order_number, 'quantity': order_quantity})
             else:
                 print(f"   {Fore.YELLOW}⚠️ Không xác định được trạng thái cho order {order_number}")
                 not_found_orders.append(order_number)
@@ -424,15 +457,39 @@ class GmailTool:
         
         print(f"\n{Fore.GREEN}✅ ORDER SUCCESS ({len(success_orders)}):")
         if success_orders:
-            for order in success_orders:
-                print(f"   {Fore.GREEN}• {order}")
+            total_success_qty = 0
+            for order_data in success_orders:
+                order = order_data['order']
+                quantity = order_data['quantity']
+                if quantity:
+                    print(f"   {Fore.GREEN}• {order} - qty: {quantity}")
+                    try:
+                        total_success_qty += int(quantity)
+                    except ValueError:
+                        pass
+                else:
+                    print(f"   {Fore.GREEN}• {order}")
+            if total_success_qty > 0:
+                print(f"   {Fore.CYAN}📊 Tổng quantity SUCCESS: {total_success_qty}")
         else:
             print(f"   {Fore.YELLOW}Không có order nào thành công")
         
         print(f"\n{Fore.RED}❌ ORDER FAILED ({len(failed_orders)}):")
         if failed_orders:
-            for order in failed_orders:
-                print(f"   {Fore.RED}• {order}")
+            total_failed_qty = 0
+            for order_data in failed_orders:
+                order = order_data['order']
+                quantity = order_data['quantity']
+                if quantity:
+                    print(f"   {Fore.RED}• {order} - quantity: {quantity}")
+                    try:
+                        total_failed_qty += int(quantity)
+                    except ValueError:
+                        pass
+                else:
+                    print(f"   {Fore.RED}• {order}")
+            if total_failed_qty > 0:
+                print(f"   {Fore.CYAN}📊 Tổng quantity FAILED: {total_failed_qty}")
         else:
             print(f"   {Fore.YELLOW}Không có order nào thất bại")
         

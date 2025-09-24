@@ -38,6 +38,7 @@ class ContentAnalyzer:
             analyzed_email['confidence'] = confidence
             analyzed_email['matched_keywords'] = self._get_matched_keywords(email)
             analyzed_email['order_number'] = self.extract_order_number(email)
+            analyzed_email['quantity'] = self.extract_quantity(email, status)
             
             analyzed_emails.append(analyzed_email)
         
@@ -266,6 +267,43 @@ class ContentAnalyzer:
             r'order\s*([0-9]+)',
             r'([0-9]{10,})',  # Tìm số có ít nhất 10 chữ số
         ]
+        
+        for pattern in patterns:
+            matches = re.findall(pattern, content, re.IGNORECASE)
+            if matches:
+                return matches[0]
+        
+        return ""
+    
+    def extract_quantity(self, email: Dict, status: str) -> str:
+        """
+        Trích xuất số lượng sản phẩm từ email
+        
+        Args:
+            email: Email object
+            status: Trạng thái email (PACKAGE_SUCCESS hoặc PACKAGE_FAILED)
+            
+        Returns:
+            Số lượng sản phẩm string
+        """
+        content = self._get_analyze_content(email)
+        
+        if status == "PACKAGE_SUCCESS":
+            # Tìm kiếm "QTY" cho ORDER SUCCESS
+            patterns = [
+                r'qty\s*:?\s*([0-9]+)',
+                r'quantity\s*:?\s*([0-9]+)',
+                r'số\s*lượng\s*:?\s*([0-9]+)',
+            ]
+        elif status == "PACKAGE_FAILED":
+            # Tìm kiếm "Quantity" cho ORDER FAILED
+            patterns = [
+                r'quantity\s*:?\s*([0-9]+)',
+                r'qty\s*:?\s*([0-9]+)',
+                r'số\s*lượng\s*:?\s*([0-9]+)',
+            ]
+        else:
+            return ""
         
         for pattern in patterns:
             matches = re.findall(pattern, content, re.IGNORECASE)
