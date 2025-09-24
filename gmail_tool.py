@@ -330,10 +330,11 @@ class GmailTool:
             print(f"\n{Fore.WHITE}Chọn chức năng:")
             print(f"{Fore.GREEN}1. Tìm kiếm đơn hàng theo order number")
             print(f"{Fore.GREEN}2. Xuất kết quả ra file")
-            print(f"{Fore.YELLOW}3. Đổi tài khoản Google (xóa token)")
+            print(f"{Fore.CYAN}3. Xem 10 email mới nhất")
+            print(f"{Fore.YELLOW}4. Đổi tài khoản Google (xóa token)")
             print(f"{Fore.RED}0. Thoát")
             
-            choice = input(f"\n{Fore.YELLOW}Nhập lựa chọn (0-3): ").strip()
+            choice = input(f"\n{Fore.YELLOW}Nhập lựa chọn (0-4): ").strip()
             
             if choice == '0':
                 print(f"{Fore.CYAN}👋 Tạm biệt!")
@@ -343,6 +344,8 @@ class GmailTool:
             elif choice == '2':
                 self._handle_export()
             elif choice == '3':
+                self._handle_view_latest_emails()
+            elif choice == '4':
                 self._handle_change_account()
             else:
                 print(f"{Fore.RED}❌ Lựa chọn không hợp lệ")
@@ -639,6 +642,32 @@ class GmailTool:
         except Exception as e:
             print(f"{Fore.RED}❌ Lỗi: {str(e)}")
     
+    def _handle_view_latest_emails(self):
+        """Xử lý xem 10 email mới nhất"""
+        # Kiểm tra và khởi tạo lại nếu cần
+        if not self.service or not self.fetcher:
+            if not self.initialize():
+                return
+        
+        print(f"\n{Fore.CYAN}📧 XEM 10 EMAIL MỚI NHẤT")
+        print(f"{Fore.CYAN}{'='*40}")
+        
+        try:
+            # Lấy 10 email mới nhất (tất cả email)
+            print(f"{Fore.YELLOW}🔍 Đang lấy 10 email mới nhất...")
+            emails = self.fetcher.get_emails(query='', max_results=10)
+            
+            if not emails:
+                print(f"{Fore.YELLOW}⚠️ Không tìm thấy email nào")
+                return
+            
+            # Hiển thị danh sách email
+            print(f"\n{Fore.GREEN}✅ Đã lấy được {len(emails)} email mới nhất:")
+            self.display_emails(emails, show_body=False, limit=10)
+                
+        except Exception as e:
+            print(f"{Fore.RED}❌ Lỗi khi lấy email: {str(e)}")
+
     def _handle_change_account(self):
         """Xử lý đổi tài khoản Google bằng cách xóa token"""
         print(f"\n{Fore.CYAN}🔄 ĐỔI TÀI KHOẢN GOOGLE")
