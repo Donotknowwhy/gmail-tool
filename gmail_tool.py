@@ -283,7 +283,7 @@ class GmailTool:
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write("KẾT QUẢ TÌM KIẾM ORDER NUMBERS\n")
                 f.write("="*50 + "\n\n")
-                f.write(f"Khoảng thời gian: {results['date_from']} đến {results['date_to']}\n")
+                f.write(f"Phạm vi tìm kiếm: Tất cả email (mọi lúc)\n")
                 f.write(f"Tổng số order tìm kiếm: {len(results['success_orders']) + len(results['failed_orders'])}\n\n")
                 
                 f.write("ORDER SUCCESS:\n")
@@ -354,50 +354,11 @@ class GmailTool:
             if not self.initialize():
                 return
         
-        # Chọn kiểu lọc
-        print(f"\n{Fore.CYAN}📅 CHỌN KIỂU LỌC EMAIL:")
-        print(f"{Fore.GREEN}1. Lọc theo khoảng thời gian (nhập ngày bắt đầu và kết thúc)")
-        print(f"{Fore.GREEN}2. Lọc tất cả email (mọi lúc)")
-        
-        filter_choice = input(f"\n{Fore.YELLOW}Nhập lựa chọn (1-2): ").strip()
-        
-        if filter_choice == '1':
-            # Nhập ngày bắt đầu và kết thúc
-            from datetime import datetime, timedelta
-            default_date_from = (datetime.now() - timedelta(days=30)).strftime('%d/%m/%Y')
-            date_from_input = input(f"{Fore.YELLOW}Nhập ngày bắt đầu (DD/MM/YYYY) [mặc định: {default_date_from}]: ").strip()
-            if not date_from_input:
-                date_from_input = default_date_from
-            
-            try:
-                date_from = datetime.strptime(date_from_input, '%d/%m/%Y').strftime('%Y-%m-%d')
-            except ValueError:
-                print(f"{Fore.RED}❌ Định dạng ngày không hợp lệ. Vui lòng nhập theo định dạng DD/MM/YYYY")
-                return
-            
-            default_date_to = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
-            date_to_input = input(f"{Fore.YELLOW}Nhập ngày kết thúc (DD/MM/YYYY) [mặc định: {default_date_to}]: ").strip()
-            if not date_to_input:
-                date_to_input = default_date_to
-            
-            try:
-                date_to = datetime.strptime(date_to_input, '%d/%m/%Y').strftime('%Y-%m-%d')
-            except ValueError:
-                print(f"{Fore.RED}❌ Định dạng ngày không hợp lệ. Vui lòng nhập theo định dạng DD/MM/YYYY")
-                return
-            
-            date_range_text = f"khoảng thời gian {date_from} đến {date_to}"
-            query_template = f"after:{date_from} before:{date_to} {{order_number}}"
-            
-        elif filter_choice == '2':
-            date_from = "mọi lúc"
-            date_to = "mọi lúc"
-            date_range_text = "tất cả email (mọi lúc)"
-            query_template = "{order_number}"
-            
-        else:
-            print(f"{Fore.RED}❌ Lựa chọn không hợp lệ!")
-            return
+        # Mặc định tìm kiếm tất cả email (mọi lúc)
+        date_from = "mọi lúc"
+        date_to = "mọi lúc"
+        date_range_text = "tất cả email (mọi lúc)"
+        query_template = "{order_number}"
         
         # Đọc order numbers từ file
         try:
@@ -407,7 +368,7 @@ class GmailTool:
             print(f"{Fore.RED}❌ Không tìm thấy file order_numbers.txt")
             return
         
-        print(f"\n{Fore.CYAN}🔍 Đang tìm kiếm {len(order_numbers)} order numbers trong {date_range_text}...")
+        print(f"\n{Fore.CYAN}🔍 Đang tìm kiếm {len(order_numbers)} order numbers trong tất cả email...")
         
         # Tìm kiếm và phân tích từng order number
         success_orders = []
